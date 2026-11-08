@@ -1,5 +1,0 @@
-{"id": "V001", "text": "remove the upcoming calendar event", "intent": "calendar_remove", "date": null, "time": null, "place": null}
-{"id": "V002", "text": "need an alarm set for sunday at five in the morning", "intent": "alarm_set", "date": "sunday", "time": "five", "place": null}
-{"id": "V003", "text": "give me the time at washington right now", "intent": "datetime_query", "date": null, "time": null, "place": "washington"}
-{"id": "V004", "text": "what time does mondays meeting start", "intent": "calendar_query", "date": "mondays", "time": null, "place": null}
-{"id": "V005", "text": "set my alarm for tuesday at six pm", "intent": "alarm_set", "date": "tuesday", "time": "six pm", "place": null}
