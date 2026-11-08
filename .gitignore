@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+models_local/
+release/
+*.safetensors
+*.bin
+*.tar
+.env
+*.key
+secrets*
+output_w*.log
+*.zip

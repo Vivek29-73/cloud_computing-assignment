@@ -1,0 +1,18 @@
+# Training configuration for make train (read by training/train.py)
+version: v1
+seed: 42
+learning_rate: 0.0001
+batch_size: 8
+num_epochs: 5
+max_seq_length: 128
+base_model: EleutherAI/pythia-70m
+train_file: output/v1/train.jsonl
+num_train_examples: 1500
+weight_decay: 0.0
+output_dir: models_local
+release_dir: release
+loss_file: training/loss.csv
+library_versions:
+  torch: "2.5.1"
+  transformers: "4.46.3"
+  pyyaml: "6.0.2"
