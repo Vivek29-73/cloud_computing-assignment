@@ -88,7 +88,6 @@ jobs:
         with:
           name: predictions
           path: results/${{ env.LABEL }}_predictions.jsonl
-
   quality-gate:
     needs: evaluate
     runs-on: ubuntu-latest
@@ -100,8 +99,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: predictions
-          path: results
+          path: ci_predictions
       - name: Quality gate (JSON validity must be at least 95%)
         run: |
-          PRED=$(ls results/*_predictions.jsonl | head -n 1)
+          PRED=$(find ci_predictions -name '*_predictions.jsonl' -print -quit)
+          echo "Checking predictions: $PRED"
+          test -n "$PRED"
           python tools/score.py "$PRED" data/validation.jsonl --min-validity 95

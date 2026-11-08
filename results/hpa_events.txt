@@ -1,0 +1,22 @@
+Name:                                                  command-parser
+Namespace:                                             app
+Labels:                                                <none>
+Annotations:                                           <none>
+CreationTimestamp:                                     Sun, 08 Nov 2026 21:30:10 +0000
+Reference:                                             Deployment/command-parser
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  0% (3m) / 70%
+Min replicas:                                          1
+Max replicas:                                          2
+Deployment pods:                                       2 current / 2 desired
+Conditions:
+  Type            Status  Reason               Message
+  ----            ------  ------               -------
+  AbleToScale     True    ScaleDownStabilized  recent recommendations were higher than current one, applying the highest recent recommendation
+  ScalingActive   True    ValidMetricFound     the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  True    TooManyReplicas      the desired replica count is more than the maximum replica count
+Events:
+  Type    Reason             Age                  From                       Message
+  ----    ------             ----                 ----                       -------
+  Normal  SuccessfulRescale  7m (x3 over 88m)     horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
+  Normal  SuccessfulRescale  4m19s (x3 over 85m)  horizontal-pod-autoscaler  New size: 2; reason: cpu resource utilization (percentage of request) above target

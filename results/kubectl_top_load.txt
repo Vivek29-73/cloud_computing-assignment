@@ -1,0 +1,3 @@
+NAME                             CPU(cores)   MEMORY(bytes)
+command-parser-8bd8569dd-bs7jj   848m         486Mi
+command-parser-8bd8569dd-cmgrk   1000m        413Mi
