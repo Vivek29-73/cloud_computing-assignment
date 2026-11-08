@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Model to evaluate (untrained = deliberately bad model, to show the quality gate failing)"
+        type: choice
+        options: [release, untrained]
+        default: release
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  RELEASE_TAG: model-v1
+  RELEASE_ASSET: model-v1.tar
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff==0.8.4
+      - run: ruff check .
+
+  unit-tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest==8.3.4
+      - run: pytest -q tests
+
+  evaluate:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    env:
+      MODEL_CHOICE: ${{ github.event.inputs.model || 'release' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CPU-only PyTorch and Transformers
+        run: |
+          pip install torch==2.5.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.46.3 numpy==1.26.4
+      - name: Download the model from the GitHub Release
+        if: env.MODEL_CHOICE == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$RELEASE_TAG" --pattern "$RELEASE_ASSET" --dir release
+          if [ -f checksums/model-v1.sha256 ]; then (cd release && sha256sum -c ../checksums/model-v1.sha256); fi
+          mkdir release_model
+          tar -xf "release/$RELEASE_ASSET" -C release_model
+          echo "MODEL_PATH=release_model" >> "$GITHUB_ENV"
+          echo "LABEL=student_v1" >> "$GITHUB_ENV"
+      - name: Use the untrained model (deliberately bad)
+        if: env.MODEL_CHOICE == 'untrained'
+        run: |
+          echo "MODEL_PATH=EleutherAI/pythia-70m" >> "$GITHUB_ENV"
+          echo "LABEL=base_pythia" >> "$GITHUB_ENV"
+      - name: Evaluate on data/validation.jsonl
+        run: python scripts/eval_student.py "$MODEL_PATH" "$LABEL"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: predictions
+          path: results/${{ env.LABEL }}_predictions.jsonl
+
+  quality-gate:
+    needs: evaluate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: predictions
+          path: results
+      - name: Quality gate (JSON validity must be at least 95%)
+        run: |
+          PRED=$(ls results/*_predictions.jsonl | head -n 1)
+          python tools/score.py "$PRED" data/validation.jsonl --min-validity 95
