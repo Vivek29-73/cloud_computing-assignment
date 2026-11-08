@@ -1,0 +1,17 @@
+.git
+.venv
+__pycache__
+*.pyc
+models_local/
+output/
+release/
+results/
+training/
+worker/
+prompts/
+network/
+k8s/
+cluster/
+scripts/
+tools/
+cloud_assignment.zip
