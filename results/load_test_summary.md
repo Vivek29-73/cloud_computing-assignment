@@ -15,7 +15,7 @@ Deployment at the time: 2 replicas (command-parser, namespace app), model versio
 | Throughput | 0.94 requests/s |
 | Successful requests per replica (X-Served-By) | 68 and 39 of 107 (63.6% and 36.4%) |
 | Model version served (X-Model-Version) | v1: 107 of 107 |
-| kubectl top pods (during the run) | TO FILL FROM YOUR OWN OUTPUT |
+| kubectl top pods (during the run) | Pod 1: 848m CPU, 486Mi memory; Pod 2: 1000m CPU, 413Mi memory |
 
 Assessment thresholds (error rate <= 1% and p95 <= 5,000 ms): **not met** in this run (1.83% and 7,900 ms).
 Load balancing: each replica served more than 30% of successful requests (63.6% and 36.4%).
