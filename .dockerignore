@@ -15,3 +15,14 @@ cluster/
 scripts/
 tools/
 cloud_assignment.zip
+
+# Credentials and secrets
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.secret
+.aws/
+.kube/

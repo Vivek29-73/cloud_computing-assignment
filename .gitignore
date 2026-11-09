@@ -10,3 +10,26 @@ release/
 secrets*
 output_w*.log
 *.zip
+
+# Python environments
+venv/
+env/
+
+# Environment variables and secrets
+.env.*
+!.env.example
+*.pem
+*.secret
+.aws/
+.kube/
+
+# Python testing and lint caches
+.pytest_cache/
+.ruff_cache/
+
+# Python logs
+*.log
+
+# OS-generated files
+.DS_Store
+Thumbs.db
